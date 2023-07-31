@@ -30,7 +30,8 @@ cluster_id <- (confounders[,1] - 1) * n_cluster + 1 + confounders[,3]
 confounders <- cbind(confounders, cluster_id)
 
 # sc_factor_num <- 37 
-sc_factor_num <- seq(5, 30, by = 2)
+sc_factor_num <- 15 
+# sc_factor_num <- seq(5, 30, by = 2)
 
 # object <- SC2(dataset, confounders, split_ratio = 0.1, tuning_iter = 20)
 # tune(object, as.integer(sc_factor_num), lambda1 = c(0.1, 1, 5, 10, 20, 50, 100), lambda2 = seq(0.3, 0.7, by = 0.1))
@@ -41,4 +42,4 @@ rm(dataset, confounders); gc();
 
 object <- partial_tune(object, cfd_rank = as.integer(sc_factor_num), lambda1 = c(1, 10, 20, 30, 40, 50))
 # object <- partial_fit(object, cfd_rank = as.integer(cfd_factor_num), lambda1 = 1)
-# save(object, file = paste0("SC2_dm_R", sc_factor_num, "_fitted_cluster.RData"))
+# save(object, file = paste0("SC2_gbm_R", sc_factor_num, "_fitted_cluster.RData"))
