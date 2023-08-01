@@ -168,7 +168,7 @@ List of 6
  $ column_factor: num [1:11, 1:2000] 1.527 -0.611 -0.673 1.339 0.426 ...
  - attr(*, "class")= chr "SR2"
 ```
-1. *cfd_matrices*: the element of the *cfd_matrices* is the latent representations for different combinations of the cell population and biological conditions. 
+1. *cfd_matrices*: the first element of the *cfd_matrices* is the latent representations for different combinations of the cell population and biological conditions. 
 2. The meaning of other elements is the same as we introduced previously.
 
 For Details of downstream analysis with results from SR2, please refer to preprint in references. 
