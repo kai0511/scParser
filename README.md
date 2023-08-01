@@ -123,7 +123,7 @@ The fitted object obtained from the above command is an R list object, containin
 8. cell_factor: sparse representation for cells 
 9. gene_factor: gene latent representation matrix of K * M, where K is the num_factors and M is the number of genes.
 
-
+### Modeling the effect of biological conditions on gene expression for cell populations
 
 For other downstream analysis with results from SR2, please refer to preprint in references. 
 
