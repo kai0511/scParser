@@ -13,7 +13,8 @@ SR2 employs **openmp** to support parallel computing. One can install **openmp**
 
 ### Install via devtools
 ```{r}
-install.packages("devtools")
+install.packages("devtools") 
+require(devtools)
 install_github("kai0511/SR2")
 ```
 ### Install locally
@@ -129,7 +130,7 @@ The fitted object obtained from the above command is an R list object, containin
 object <- SR2(as.matrix(dataset[,-c(1,2)]), confounders, split_ratio = 0.1, tuning_iter = 20)
 ```
 1. *confounders*: A confounder matrix. The elements of the matrix are used as indices to extract corresponding latent representation, so its elements are integer and greater than 0. To model the interaction between cell populations and biological conditions (e.g., disease status), the confounder matrix should contain a column with each element representing the combination of the cell population and biological condition the corresponding cell belongs. For example, if there are 5 cell populations and 2 levels for a biological condition, then each element of the column should take a value of integer from 1 to 10 to represent the combination it belongs to.
-2. Other parameters available is the same as we introduce previously, and the definition of the parameters is also the same.
+2. Other parameters available is the same as we introduced previously in creating SR2 object, and the definition of the parameters is also the same.
 
 
 To tune the parameters for the new model, the following can be employed.
