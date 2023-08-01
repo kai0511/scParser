@@ -132,7 +132,7 @@ object <- SR2(as.matrix(dataset[,-c(1,2)]), confounders, split_ratio = 0.1, tuni
 2. Other parameters available is the same as we introduce previously, and the definition of the parameters is also the same.
 
 
-If one would like to tune the parameters for the new model, the following can be employed
+To tune the parameters for the new model, the following can be employed.
 ```{r}
 object <- partial_tune(object, cfd_rank = as.integer(cfd_factor_num), lambda1 = c(0.1, 1, 10, 20, 30, 40, 50))
 ```
