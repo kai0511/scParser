@@ -125,7 +125,53 @@ The fitted object obtained from the above command is an R list object, containin
 
 ### Modeling the effect of biological conditions on gene expression for cell populations
 
-For other downstream analysis with results from SR2, please refer to preprint in references. 
+```{r}
+object <- SR2(as.matrix(dataset[,-c(1,2)]), confounders, split_ratio = 0.1, tuning_iter = 20)
+```
+1. *confounders*: A confounder matrix. The elements of the matrix are used as indices to extract corresponding latent representation, so its elements are integer and greater than 0. To model the interaction between cell populations and biological conditions (e.g., disease status), the confounder matrix should contain a column with each element representing the combination of the cell population and biological condition the corresponding cell belongs. For example, if there are 5 cell populations and 2 levels for a biological condition, then each element of the column should take a value of integer from 1 to 10 to represent the combination it belongs to.
+2. Other parameters available is the same as we introduce previously, and the definition of the parameters is also the same.
+
+
+If one would like to tune the parameters for the new model, the following can be employed
+```{r}
+object <- partial_tune(object, cfd_rank = as.integer(cfd_factor_num), lambda1 = c(0.1, 1, 10, 20, 30, 40, 50))
+```
+1. *cfd_rank*: An integer vector from which the rank of latent dimension for modeling variation from biological conditions is chosen.
+2. *lambda*: A numeric vector from which the tuning parameter *lambda* is selected. $\lambda$ controls penalty for latent representations for biological variables.
+
+Then, we can fit the new model with the parameters that performs the best in the previous step.
+```{r}
+object <- partial_fit(object, cfd_rank = as.integer(11), lambda1 = 1)
+```
+
+The fitted object obtained from the above command is an R list object as follows:
+```{r}
+> str(object)
+List of 6
+ $ data         : num [1:22753, 1:2000] 0 0 7.22 0 0 ...
+  ..- attr(*, "dimnames")=List of 2
+  .. ..$ : chr [1:22753] "SRR5818088-AAAAAAAAAAAA" "SRR5818088-AAAAAAAATAGG" "SRR5818088-AAAAGACGAACG" "SRR5818088-AAAAGGGCGAAC" ...
+  .. ..$ : chr [1:2000] "ENSG00000108849" "ENSG00000157005" "ENSG00000118785" "ENSG00000164692" ...
+  $ confounder     : num [1:22753, 1:2] 3 2 6 5 5 5 5 5 2 4 ...
+  ..- attr(*, "dimnames")=List of 2
+  .. ..$ : chr [1:22753] "SRR5818088-AAAAAAAAAAAA" "SRR5818088-AAAAAAAATAGG" "SRR5818088-AAAAGACGAACG" "SRR5818088-AAAAGGGCGAAC" ...
+  .. ..$ : chr [1:2] "interaction_id" "donnor_id"
+ $ split_ratio  : num 0.1
+ $ params       :List of 4
+  ..$ global_tol : num 1e-08
+  ..$ sub_tol    : num 1e-05
+  ..$ tuning_iter: num 20
+  ..$ max_iter   : num 50000
+ $ cfd_matrices :List of 1
+  ..$ factor0: num [1:12, 1:11] -0.537 -0.985 -0.39 0.74 -1.168 ...
+  ..$ factor1: num [1:9, 1:11] 0.272 0.241 -0.158 -0.08 0.103 ...
+ $ column_factor: num [1:11, 1:2000] 1.527 -0.611 -0.673 1.339 0.426 ...
+ - attr(*, "class")= chr "SR2"
+```
+1. *cfd_matrices*: the element of the *cfd_matrices* is the latent representations for different combinations of the cell population and biological conditions. 
+2. The meaning of other elements is the same as we introduced previously.
+
+For Details of downstream analysis with results from SR2, please refer to preprint in references. 
 
 ## References
 Zhao, Kai, et al. "SR2: Sparse Representation Learning for Scalable Single-cell RNA Sequencing Data Analysis." bioRxiv (2023): 2023-08.
