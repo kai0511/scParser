@@ -25,7 +25,7 @@ R CMD INSTALL SR2_1.0.tar.gz
 
 ## Usage
 
-* Data preparation
+### Data preparation
 
 Here we use the DM dataset (22753*2000) as data matrix as toy example for illustration. The data is place in the data directory of this package.
 ```{r}
@@ -49,7 +49,7 @@ data[is.na(dataset)] <- 0 # cast NAs to zeros
 confounders <- as.matrix(dataset[ ,1:end_idx])   # matrix for biological variables
 ```
 
-* Create SR2 object
+### Create SR2 object
 ```{r}
 object <- SR2(as.matrix(dataset[,-c(1,2)]), confounders, split_ratio = 0.1, global_tol = 1e-8, sub_tol = 1e-5, tuning_iter = 20)
 ```
@@ -62,7 +62,7 @@ It needs the following arguments:
 6. *tuning_iter*: the number of iterations to run for each try of hyperparameter combinations. In practice, 20 or 30 iterations per try work fine in practice.
 7. *max_iter*: the maximum number of iterations. When it reaches, iteration will terminate even if the global convergence criteria do not meet. Its default value is 10000.
 
-* Tune hyperparameters
+### Tune hyperparameters
 ```{r}
 object <- tune(object, latent_rank = as.integer(seq(10, 30, by = 2)), lambda1 = c(0.1, 1, 10, 20, 50, 100), lambda2 = c(0.01, 0.1, 0.2, 0.4, 0.9))
 ```
@@ -76,6 +76,8 @@ It has the following arguments:
 6. *alpha* (optional): A numeric vector from which the tuning parameter *alpha* is selected. By default, $\alpha$ is 1.
 
 * After parameter tuning, the results for tuning will be saved in the current directory. One chose the combination of hyperparameters with the lowest RMSE on test, and fit SR2 with it.
+
+### Model fitting
 
 ```{r}
 # selected hyperparameters for SR2
@@ -122,7 +124,8 @@ The fitted object obtained from the above command is an R list object, containin
 9. gene_factor: gene latent representation matrix of K * M, where K is the num_factors and M is the number of genes.
 
 
-For downstream analysis with results from SR2, please refer to preprint in references. 
+
+For other downstream analysis with results from SR2, please refer to preprint in references. 
 
 ## References
 Zhao, Kai, et al. "SR2: Sparse Representation Learning for Scalable Single-cell RNA Sequencing Data Analysis." bioRxiv (2023): 2023-08.
