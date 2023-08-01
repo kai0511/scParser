@@ -235,7 +235,7 @@ List partial_optimize(const mat& data, const umat& train_indicator, List& cfd_fa
     // time_t tic, toc; 
     unsigned int i, iter = 0, cfd_num = cfd_factors.size();
     uvec train_idx, test_idx;
-    double loss = 0.0, pre_loss, delta_loss, sum_residual, train_rmse, test_rmse; // decay = 1.0; 
+    double loss = 0.0, pre_loss, delta_loss, sum_residual, train_rmse, test_rmse; 
     mat gram, residual, sub_pred, row_factor = zeros(data.n_rows, column_factor.n_rows);
 
     // check whether the number of the confounding matrices is equal to the number of confounding indicators.
@@ -304,22 +304,11 @@ List partial_optimize(const mat& data, const umat& train_indicator, List& cfd_fa
             }
 
             // a trick to reduce computational burden
-            // if(i != cfd_num - 1){
+            if(i != cfd_num - 1){
                 residual -= index_matrices(i) * cfd_matrices(i) * column_factor;
-            // }
+            }
 
-	    evaluate(residual, train_idx, test_idx, sum_residual, train_rmse, test_rmse, tuning, iter, 1);
-
-            // // compute loss
-            // pre_loss = loss;
-            // loss = sum_residual/2;
-            // for(unsigned int i = 0; i < cfd_matrices.n_elem; i++){
-            //     loss += lambda1 * pow(norm(cfd_matrices(i), "F"), 2)/2;
-            // }
-            // loss += lambda1 * pow(norm(column_factor, "F"), 2)/2;
-
-            // delta_loss = pre_loss - loss;
-            // cout << "Delta loss for iter " << iter << ":" << delta_loss << endl;
+	        evaluate(residual, train_idx, test_idx, sum_residual, train_rmse, test_rmse, tuning, iter, 1);
         }
 
         // update columm_factor
@@ -345,20 +334,6 @@ List partial_optimize(const mat& data, const umat& train_indicator, List& cfd_fa
 
             delta_loss = pre_loss - loss;
             cout << "Delta loss for iter " << iter << ":" << delta_loss << endl;
-
-            // if(delta_loss/1000 <= 1e-5){
-            //     decay = 1e-5;
-            // }else if(delta_loss/1000 <= 1e-4){
-            //     decay = 1e-4;
-            // }else if(delta_loss/1000 <= 1e-3){
-            //     decay = 1e-3;
-            // }else if(delta_loss/1000 <= 1e-2){
-            //     decay = 1e-2;
-            // }else if(delta_loss/1000 <= 1e-1){
-            //     decay = 1e-1;
-            // }else{
-            //     decay = 1.0;
-            // }
 
             if(delta_loss/pre_loss < global_tol){
                 break;
@@ -389,7 +364,7 @@ List optimize(const mat& data, const umat& train_indicator, List& cfd_factors, m
     // time_t tic, toc; 
     unsigned int i, iter = 0, cfd_num = cfd_factors.size();
     uvec train_idx, test_idx;
-    double loss, pre_loss, delta_loss, sum_residual, train_rmse, test_rmse, decay = 1.0; 
+    double loss, pre_loss, delta_loss, sum_residual, train_rmse, test_rmse; // decay = 1.0; 
     mat gram, residual, sub_pred, row_factor = zeros(data.n_rows, column_factor.n_rows) , predictions = zeros(size(data));
 
     // check whether the number of the confounding matrices is equal to the number of confounding indicators.
@@ -487,19 +462,19 @@ List optimize(const mat& data, const umat& train_indicator, List& cfd_factors, m
             delta_loss = pre_loss - loss;
             cout << "Delta loss for iter " << iter << ":" << delta_loss << endl;
 
-            if(delta_loss/1000 <= 1e-5){
-                decay = 1e-5;
-            }else if(delta_loss/1000 <= 1e-4){
-                decay = 1e-4;
-            }else if(delta_loss/1000 <= 1e-3){
-                decay = 1e-3;
-            }else if(delta_loss/1000 <= 1e-2){
-                decay = 1e-2;
-            }else if(delta_loss/1000 <= 1e-1){
-                decay = 1e-1;
-            }else{
-                decay = 1.0;
-            }
+            // if(delta_loss/1000 <= 1e-5){
+            //     decay = 1e-5;
+            // }else if(delta_loss/1000 <= 1e-4){
+            //     decay = 1e-4;
+            // }else if(delta_loss/1000 <= 1e-3){
+            //     decay = 1e-3;
+            // }else if(delta_loss/1000 <= 1e-2){
+            //     decay = 1e-2;
+            // }else if(delta_loss/1000 <= 1e-1){
+            //     decay = 1e-1;
+            // }else{
+            //     decay = 1.0;
+            // }
 
             if(delta_loss/pre_loss < global_tol){
                 break;
@@ -532,7 +507,7 @@ List batch_optimize(const mat& data, const List& cfd_factors, mat column_factor,
     cout.precision(12);
     // time_t tic, toc;
     unsigned int i, iter = 0, k, rank = cell_factor.n_cols, cfd_num = cfd_factors.size();
-    double loss = std::numeric_limits<double>::max(), decay = 1.0;
+    double loss = std::numeric_limits<double>::max(); // decay = 1.0;
     double pre_loss, delta_loss, train_rmse, sum_residual = 0.0;
     uvec ids, ord;
     vec trace_ZtZ = zeros(num_batch), trace_RtR = zeros(num_batch);
@@ -696,19 +671,19 @@ List batch_optimize(const mat& data, const List& cfd_factors, mat column_factor,
             cout << "Loss for iter " << iter << ":" << loss << endl;
             cout << "Delta loss for iter " << iter << ":" << delta_loss << endl;
 
-            if(delta_loss/1000 <= 1e-5){
-                decay = 1e-5;
-            }else if(delta_loss/1000 <= 1e-4){
-                decay = 1e-4;
-            }else if(delta_loss/1000 <= 1e-3){
-                decay = 1e-3;
-            }else if(delta_loss/1000 <= 1e-2){
-                decay = 1e-2;
-            }else if(delta_loss/1000 <= 1e-1){
-                decay = 1e-1;
-            }else{
-                decay = 1.0;
-            }
+            // if(delta_loss/1000 <= 1e-5){
+            //     decay = 1e-5;
+            // }else if(delta_loss/1000 <= 1e-4){
+            //     decay = 1e-4;
+            // }else if(delta_loss/1000 <= 1e-3){
+            //     decay = 1e-3;
+            // }else if(delta_loss/1000 <= 1e-2){
+            //     decay = 1e-2;
+            // }else if(delta_loss/1000 <= 1e-1){
+            //     decay = 1e-1;
+            // }else{
+            //     decay = 1.0;
+            // }
 
             if(delta_loss/pre_loss < global_tol){
                 break;
