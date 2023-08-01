@@ -55,7 +55,7 @@ confounders <- as.matrix(dataset[ ,1:end_idx])   # matrix for biological variabl
 object <- SR2(as.matrix(dataset[,-c(1,2)]), confounders, split_ratio = 0.1, global_tol = 1e-8, sub_tol = 1e-5, tuning_iter = 20)
 ```
 It needs the following arguments:
-1. *data*: A log-transformed expression data matrix;
+1. *data*: A log-transformed expression data matrix. For data matrix with large sample size, it is recommended to sample a proportion of observations across bio-samples for training to accelerate the process of model selection.
 2. *confounder*: A confounder matrix. The elements of the matrix are used as indices to extract corresponding latent representation, so its elements are integer and greater than 0;
 3. *split_ratio*: define the proportion of elements in the data matrix used as test set for hyperparameter tuning.  
 4. *global_tol*: defines global convergence tolerance for SR2. Note SR2 check convergence every 10 iterations, and the default value for global_tol is 1e-8.
@@ -76,9 +76,8 @@ It has the following arguments:
 5. *lambda2*: A numeric vector from which the tuning parameter *lambda2* is selected. $\lambda_2$ controls penalty for latent representations for cellular representations.
 6. *alpha* (optional): A numeric vector from which the tuning parameter *alpha* is selected. By default, $\alpha$ is 1.
 
-* After parameter tuning, the results for tuning will be saved in the current directory. One chose the combination of hyperparameters with the lowest RMSE on test, and fit SR2 with it.
-
 ### Model fitting
+After parameter tuning, the results for tuning will be saved in the current directory. One chose the combination of hyperparameters with the lowest RMSE on test, and fit SR2 with it.
 
 ```{r}
 # selected hyperparameters for SR2
@@ -129,7 +128,7 @@ The fitted object obtained from the above command is an R list object, containin
 ```{r}
 object <- SR2(as.matrix(dataset[,-c(1,2)]), confounders, split_ratio = 0.1, tuning_iter = 20)
 ```
-1. *confounders*: A confounder matrix. The elements of the matrix are used as indices to extract corresponding latent representation, so its elements are integer and greater than 0. To model the interaction between cell populations and biological conditions (e.g., disease status), the confounder matrix should contain a column with each element representing the combination of the cell population and biological condition the corresponding cell belongs. For example, if there are 5 cell populations and 2 levels for a biological condition, then each element of the column should take a value of integer from 1 to 10 to represent the combination it belongs to.
+1. *confounders*: A confounder matrix. The elements of the matrix are used as indices to extract corresponding latent representation, so its elements are integer and greater than 0. To model the interaction between cell populations and biological conditions (e.g., disease status), the confounder matrix should contain a column with each element representing the combination of the cell population and biological condition the corresponding cell belongs. For example, if there are 5 cell populations and 2 levels for a biological condition, then each element of the column should take a value of integer from 1 to 10 to represent the combination of cell population and biological condition corresponding observation belongs to.
 2. Other parameters available is the same as we introduced previously in creating SR2 object, and the definition of the parameters is also the same.
 
 
