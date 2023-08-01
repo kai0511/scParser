@@ -25,7 +25,7 @@ vec nnls(const mat &X, const subview_col<double> &y, const double lambda, int ma
         for (int k = 0; k < X.n_cols; k++) {
 
             // tmp = beta[k] - mu[k] / H.at(k,k);
-            tmp = beta[k] - (mu[k] + lambda * beta_sum)/(H.at(k,k) + lambda)
+            tmp = beta[k] - (mu[k] + lambda * beta_sum)/(H.at(k,k) + lambda);
 
             if (tmp < 0) tmp = 0;
 
