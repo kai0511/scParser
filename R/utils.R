@@ -184,8 +184,4 @@ mnn_clustering <- function(cell_factor, sample_info, neig_num = 20){
     clusters = split(cl_louvain, rep(1:length(cell_factor_list), time = nc[-1]))
 }
 
-for(i in seq(4)){
-    d <- immune_aggregated_result[[i]]
-    cat("silhouette score:", sk$metrics$silhouette_score(d[, 8:9], d[[5]]), "\n")
-}
 
