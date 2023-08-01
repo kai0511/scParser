@@ -10,7 +10,7 @@
 #' @return An SC2 object
 #' @export
 #' 
-SR2 <- function(data, confounders, split_ratio = 0.1, global_tol = 1e-8, sub_tol = 1e-5, tuning_iter = 30, max_iter = 50000){
+SR2 <- function(data, confounders, split_ratio = 0.1, global_tol = 1e-8, sub_tol = 1e-5, tuning_iter = 30, max_iter = 10000){
 
     # create insider class
     object <- structure(list(), class = "SR2")

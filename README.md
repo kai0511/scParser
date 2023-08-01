@@ -60,62 +60,70 @@ It needs the following arguments:
 4. *global_tol*: defines global convergence tolerance for SR2. Note SR2 check convergence every 10 iterations, and the default value for global_tol is 1e-8.
 5. *sub_tol*: defines the convergence criteria for elastic net problems. Its impact on global convergence rate is small. By default, it is 1e-5.
 6. *tuning_iter*: the number of iterations to run for each try of hyperparameter combinations. In practice, 20 or 30 iterations per try work fine in practice.
-7. *max_iter*: the maximum number of iterations. When it reaches, iteration will terminate even if the global convergence criteria do not meet. Its default value is 50000.
+7. *max_iter*: the maximum number of iterations. When it reaches, iteration will terminate even if the global convergence criteria do not meet. Its default value is 10000.
 
 * Tune hyperparameters
 ```{r}
-object <- tune(object, latent_dimension = as.integer(seq(10, 30, by = 2)), lambda = seq(1, 20, by = 2), alpha = c(0.2, 0.3, 0.4, 0.5))
+object <- tune(object, latent_rank = as.integer(seq(10, 30, by = 2)), lambda1 = c(0.1, 1, 10, 20, 50, 100), lambda2 = c(0.01, 0.1, 0.2, 0.4, 0.9))
 ```
-It needs the following arguments:
+It has the following arguments:
 1. *object*: An SR2 object created with the above arguments;
-2. *latent_dimension*: A integer vector from which the rank of latent dimension is chosen;
-3. *lambda*: A numeric vector from which the tuning parameter *lambda* is selected;
-4. *alpha*: A numeric vector from which the tuning parameter *alpha* is selected;
+2. *latent_rank*: An integer vector from which the rank of latent dimension is chosen;
+3. *cfd_rank* (optional): An integer vector from which the rank of latent dimension for modeling variation from biological conditions is chosen. If not applied, we assume that $K_1 = K_2$. See reference for details.
+
+4. *lambda1*: A numeric vector from which the tuning parameter *lambda1* is selected. $\lambda_1$ controls penalty for latent representations for biological conditions.
+5. *lambda2*: A numeric vector from which the tuning parameter *lambda2* is selected. $\lambda_2$ controls penalty for latent representations for cellular representations.
+6. *alpha* (optional): A numeric vector from which the tuning parameter *alpha* is selected. By default, $\alpha$ is 1.
 
 * After parameter tuning, the results for tuning will be saved in the current directory. One chose the combination of hyperparameters with the lowest RMSE on test, and fit SR2 with it.
+
 ```{r}
 # selected hyperparameters for SR2
-num_factors <- 23
-lambda <- 10
-alpha <- 0.4
+num_factors <- 11
+lambda1 <- 40   
+lambda2 <- 0.7
+
 object <- fit(object, as.integer(num_factors), lambda = lambda, alpha = alpha)
-save(object, file = paste0("SR2_ageing_R", num_factors, "_fitted_object.RData"))
+save(object, file = paste0("SR2_DM_R", num_factors, "_fitted_object.RData"))
 
 > str(object)
-List of 7
- $ data           : num [1:377, 1:5000] 0 0 0 0 0.336 ...
+List of 9
+ $ data           : num [1:22753, 1:2000] 0 0 7.22 0 0 ...
   ..- attr(*, "dimnames")=List of 2
-  .. ..$ : NULL
-  .. ..$ : chr [1:5000] "X499304660" "X499304661" "X499304664" "X499304666" ...
- $ confounder     : num [1:377, 1:4] 1 1 1 1 1 1 2 2 2 2 ...
+  .. ..$ : chr [1:22753] "SRR5818088-AAAAAAAAAAAA" "SRR5818088-AAAAAAAATAGG" "SRR5818088-AAAAGACGAACG" "SRR5818088-AAAAGGGCGAAC" ...
+  .. ..$ : chr [1:2000] "ENSG00000108849" "ENSG00000157005" "ENSG00000118785" "ENSG00000164692" ...
+ $ train_indicator: int [1:22753, 1:2000] 1 1 0 1 0 1 1 1 1 1 ...
+ $ confounder     : num [1:22753, 1:2] 1 1 1 1 1 1 1 1 1 1 ...
   ..- attr(*, "dimnames")=List of 2
-  .. ..$ : NULL
-  .. ..$ : chr [1:4] "pid" "sid" "did" "interaction_indicator"
- $ train_indicator: int [1:377, 1:5000] 1 1 1 1 0 1 1 1 1 1 ...
+  .. ..$ : chr [1:22753] "SRR5818088-AAAAAAAAAAAA" "SRR5818088-AAAAAAAATAGG" "SRR5818088-AAAAGACGAACG" "SRR5818088-AAAAGGGCGAAC" ...
+  .. ..$ : chr [1:2] "disease_id" "donnor_id"
  $ params         :List of 4
-  ..$ global_tol : num 1e-10
+  ..$ global_tol : num 1e-08
   ..$ sub_tol    : num 1e-05
   ..$ tuning_iter: num 30
-  ..$ max_iter   : num 50000
- $ cfd_matrices   :List of 4
-  ..$ factor0: num [1:2, 1:23] -0.155 0.128 0.144 -0.217 0.862 ...
-  ..$ factor1: num [1:8, 1:23] -0.0301 -0.057 -0.2099 0.1279 0.0856 ...
-  ..$ factor2: num [1:107, 1:23] -0.377 -0.778 -0.11 -0.552 0.251 ...
-  ..$ factor3: num [1:16, 1:23] -0.000318 0.196197 -0.040399 0.031864 0.053713 ...
- $ column_factor  : num [1:23, 1:5000] 0 0.00386 0 -0.00831 0 ...
+  ..$ max_iter   : num 10000
+ $ cfd_matrices   :List of 2
+  ..$ factor0: num [1:2, 1:11] -1.3428 -0.9747 -0.736 -0.7037 0.0449 ...
+  ..$ factor1: num [1:9, 1:11] 0.282 0.282 -0.188 -0.11 0.123 ...
+ $ column_factor  : num [1:11, 1:2000] -0.1435 -0.15236 -0.13395 0.00664 0.12703 ...
+ $ cell_factor    : num [1:22753, 1:11] 0 -4.897 -0.172 0 0.597 ...
+ $ gene_factor    : num [1:11, 1:2000] 0.00835 -0.0087 0.01543 0.01838 0.0063 ...
  - attr(*, "class")= chr "SR2"
 ```
 
 The fitted object obtained from the above command is an R list object, containing the following elements:
 1. log-transformed expression data matrix;
-2. confounder matrix
-3. train_indicator: an indicator matrix for elements to be concluded as train set.
+2. train_indicator: an indicator matrix for elements to be concluded as train set.
+3. confounder matrix
 4. params: parameter setting for SR2
-6. cfd_matrices: a list of low-rank representations for biological variables and interaction. One can access the low-rank representation for a specific biological variable with the index of the variable in the confounder matrix. The low-rank representation for the interaction is the last matrix of the cfd_matrices List.
+6. cfd_matrices: a list of low-rank representations for biological variables. One can access the low-rank representation for a specific biological variable with the index of the variable in the confounder matrix.
 7. column_factor: gene latent representation matrix of K * M, where K is the num_factors and M is the number of genes.
+8. cell_factor: sparse representation for cells 
+9. gene_factor: gene latent representation matrix of K * M, where K is the num_factors and M is the number of genes.
+
 
 For downstream analysis with results from SR2, please refer to preprint in references. 
 
 ## References
-Zhao, Kai, et al. "SR2: Interpretable Sparse Matrix Decomposition for Bulk RNA Expression Data Analysis." bioRxiv (2022): 2022-11.
+Zhao, Kai, et al. "SR2: Sparse Representation Learning for Scalable Single-cell RNA Sequencing Data Analysis." bioRxiv (2023): 2023-08.
 
