@@ -28,7 +28,7 @@ R CMD INSTALL SR2_1.0.tar.gz
 
 ### Data preparation
 
-Here we use the DM dataset (22753*2000) as data matrix as toy example for illustration. The data is place in the data directory of this package.
+Here we use the DM dataset (22753*2000) as data matrix as toy example for illustration. The data is placed in the data directory of this package.
 ```{r}
 require(SR2)
 
@@ -77,7 +77,17 @@ It has the following arguments:
 6. *alpha* (optional): A numeric vector from which the tuning parameter *alpha* is selected. By default, $\alpha$ is 1.
 
 ### Model fitting
-After parameter tuning, the results for tuning will be saved in the current directory. One chose the combination of hyperparameters with the lowest RMSE on test, and fit SR2 with it.
+After parameter tuning, the results for tuning will be saved in the current directory. One chose the combination of hyperparameters with the lowest RMSE on test, and fit SR2 with it. The parameters for the function fit are as follows:
+
+1. *object*: a SR2 object; 
+2. *latent_rank*: an integer for the rank of the latent space for modeling celular variation;
+3. *cfd_rank* (optional): if not provided then *latent_rank* is used. It should be determined by parameter tuning in the previous step; 
+4. *batch_num*: the number of batches used when SR2 is fitted with batch strategy. The parameter is considered only when *is_batch* is switched on. Its value is NULL by default.    
+5. *is_batch*: indicating whether the batch strategy is on. By default, its value is FALSE, 
+6. *lambda1*: L2 penalty for latent representations for biological conditions; 
+7. *lambda2*: L2 penalty for latent representations of cells;
+8. *alpha*: L1 penalty for latent representations of cells.
+Note: *lambda2* and *alpha* form the elastic net regularization for latent representations of cells.
 
 ```{r}
 # selected hyperparameters for SR2
