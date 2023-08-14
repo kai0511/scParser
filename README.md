@@ -9,7 +9,7 @@ Rcpp (>= 1.0.9), RcppArmadillo, dplyr
 ```
 
 ## Installation
-SR2 employs **openmp** to support parallel computing. One can install **openmp** before the installation of the package to enjoy the benefit. This package can be installed via the following two ways.
+SR2 employs **OpenMP** to support parallel computing. One can install **OpenMP** before the installation of the package to enjoy the benefit. This package can be installed via the following two ways.
 
 ### Install via devtools
 ```{r}
