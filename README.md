@@ -52,15 +52,15 @@ confounders <- as.matrix(dataset[ ,1:end_idx])   # matrix for biological variabl
 
 ### Create SR2 object
 ```{r}
-object <- SR2(as.matrix(dataset[,-c(1,2)]), confounders, split_ratio = 0.1, global_tol = 1e-8, sub_tol = 1e-5, tuning_iter = 20)
+object <- SR2(as.matrix(dataset[,-c(1,2)]), confounders, split_ratio = 0.1, global_tol = 1e-8, sub_tol = 1e-5, tuning_iter = 30)
 ```
 It needs the following arguments:
 1. *data*: A log-transformed expression data matrix. For data matrix with large sample size, it is recommended to sample a proportion of observations across bio-samples for training to accelerate the process of model selection.
 2. *confounder*: A confounder matrix. The elements of the matrix are used as indices to extract corresponding latent representation, so its elements are integer and greater than 0;
-3. *split_ratio*: define the proportion of elements in the data matrix used as test set for hyperparameter tuning.  
+3. *split_ratio*: define the proportion of elements in the data matrix used as test set for hyperparameter tuning. The default value for it is 0.1. 
 4. *global_tol*: defines global convergence tolerance for SR2. Note SR2 check convergence every 10 iterations, and the default value for global_tol is 1e-8.
 5. *sub_tol*: defines the convergence criteria for elastic net problems. Its impact on global convergence rate is small. By default, it is 1e-5.
-6. *tuning_iter*: the number of iterations to run for each try of hyperparameter combinations. In practice, 20 or 30 iterations per try work fine in practice.
+6. *tuning_iter*: the number of iterations to run for each try of hyperparameter combinations. In practice, 20 or 30 iterations per try work fine in practice. By default, it is 30.
 7. *max_iter*: the maximum number of iterations. When it reaches, iteration will terminate even if the global convergence criteria do not meet. Its default value is 10000.
 
 ### Tune hyperparameters
@@ -71,7 +71,6 @@ It has the following arguments:
 1. *object*: An SR2 object created with the above arguments;
 2. *latent_rank*: An integer vector from which the rank of latent dimension is chosen;
 3. *cfd_rank* (optional): An integer vector from which the rank of latent dimension for modeling variation from biological conditions is chosen. If not applied, we assume that $K_1 = K_2$. See reference for details.
-
 4. *lambda1*: A numeric vector from which the tuning parameter *lambda1* is selected. $\lambda_1$ controls penalty for latent representations for biological conditions.
 5. *lambda2*: A numeric vector from which the tuning parameter *lambda2* is selected. $\lambda_2$ controls penalty for latent representations for cellular representations.
 6. *alpha* (optional): A numeric vector from which the tuning parameter *alpha* is selected. By default, $\alpha$ is 1.
@@ -83,7 +82,7 @@ After parameter tuning, the results for tuning will be saved in the current dire
 2. *latent_rank*: an integer for the rank of the latent space for modeling celular variation;
 3. *cfd_rank* (optional): if not provided then *latent_rank* is used. It should be determined by parameter tuning in the previous step; 
 4. *batch_num*: the number of batches used when SR2 is fitted with batch strategy. The parameter is considered only when *is_batch* is switched on. Its value is NULL by default.    
-5. *is_batch*: indicating whether the batch strategy is on. By default, its value is FALSE, 
+5. *is_batch*: indicating whether the batch strategy is on. By default, its value is FALSE;
 6. *lambda1*: L2 penalty for latent representations for biological conditions; 
 7. *lambda2*: L2 penalty for latent representations of cells;
 8. *alpha*: L1 penalty for latent representations of cells.
