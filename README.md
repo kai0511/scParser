@@ -28,7 +28,7 @@ R CMD INSTALL SR2_1.0.tar.gz
 
 ### Data preparation
 
-Here we use the DM dataset (22753*2000) as data matrix as toy example for illustration. The data is placed in the data directory of this package.
+Here we use the data matrix (22753*2000) of DM dataset as a toy example for illustration. The data is placed in the data directory of this package.
 ```{r}
 require(SR2)
 
