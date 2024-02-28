@@ -249,7 +249,7 @@ tune <- function(object, latent_rank, cfd_rank = NULL, lambda1 = 0.1, lambda2 = 
 }
 
 #' @export
-fit <- function(object, latent_rank, cfd_rank = NULL, batch_num = NULL, is_batch = FALSE, lambda1 = 1, lambda2 = 0.5, alpha = 1){
+fit <- function(object, latent_rank, cfd_rank = NULL, batch_num = NULL, is_batch = FALSE, batch_assignment = NULL, lambda1 = 1, lambda2 = 0.5, alpha = 1){
    
     if(is.null(cfd_rank)){
         cfd_rank <- latent_rank
@@ -277,8 +277,15 @@ fit <- function(object, latent_rank, cfd_rank = NULL, batch_num = NULL, is_batch
         fitted_obj <- optimize(object$data, train_indicator, confounder_list, column_factor, object$confounder,
                                cell_factor, gene_factor, lambda1, lambda2, alpha, 0, global_tol, sub_tol, max_iter)
     }else{
-        fitted_obj <- batch_optimize(object$data, confounder_list, column_factor, object$confounder,
-                                     cell_factor, gene_factor, batch_num, lambda1, lambda2, alpha, global_tol, sub_tol, max_iter)
+
+        if(is.null(batch_assignment)){
+            fitted_obj <- batch_optimize(object$data, confounder_list, column_factor, object$confounder,
+                                     cell_factor, gene_factor, batch_num, 0, rep(0, nrow(object$data)), lambda1, lambda2, alpha, global_tol, sub_tol, max_iter)
+        } else {
+            fitted_obj <- batch_optimize(object$data, confounder_list, column_factor, object$confounder,
+                                     cell_factor, gene_factor, batch_num, 1, batch_assignment, lambda1, lambda2, alpha, global_tol, sub_tol, max_iter)
+        }
+        
     }
 
     object[['cfd_matrices']] <- fitted_obj[['row_matrices']]

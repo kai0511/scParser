@@ -500,7 +500,7 @@ List optimize(const mat& data, const umat& train_indicator, List& cfd_factors, m
 
 // [[Rcpp::export]]
 List batch_optimize(const mat& data, const List& cfd_factors, mat column_factor, const umat& cfd_indicators,
-                    mat cell_factor, mat gene_factor, const unsigned int num_batch,
+                    mat cell_factor, mat gene_factor, const unsigned int num_batch, const unsigned int predefined_batch, const uvec batch_assignment, 
                     const double lambda1 = 0.1, const double lambda2 = 0.01, const double alpha = 1.0,
                     const double global_tol = 1e-10, const double sub_tol = 1e-5, const unsigned int max_iter = 10000){
 
@@ -510,6 +510,8 @@ List batch_optimize(const mat& data, const List& cfd_factors, mat column_factor,
     double loss = std::numeric_limits<double>::max(); // decay = 1.0;
     double pre_loss, delta_loss, train_rmse, sum_residual = 0.0;
     uvec ids, ord;
+
+    uvec batch_ids = unique(batch_assignment);
     vec trace_ZtZ = zeros(num_batch), trace_RtR = zeros(num_batch);
 
     mat gram, residual, batch_row_factor, batch_cell_factor; // row_factor = zeros(size(cell_factor));
@@ -526,7 +528,14 @@ List batch_optimize(const mat& data, const List& cfd_factors, mat column_factor,
     }
 
     // assign row indices into batches, whose sizes are determined by num_batch
-    field<uvec> batches = generate_batches(data.n_rows, num_batch);
+    field<uvec> batches(num_batch);
+    if(predefined_batch == 1){
+        for(i = 0; i < size(batch_ids); i++){
+            batches(i) = find(batch_assignment == batch_ids(i));
+        }
+    }else{
+        batches = generate_batches(data.n_rows, num_batch);
+    }
 
     // place indices of confounders into arma::field for computational consideration
     field<mat> index_matrices(cfd_num);
