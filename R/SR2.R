@@ -285,7 +285,6 @@ fit <- function(object, latent_rank, cfd_rank = NULL, batch_num = NULL, is_batch
             fitted_obj <- batch_optimize(object$data, confounder_list, column_factor, object$confounder,
                                      cell_factor, gene_factor, batch_num, 1, batch_assignment, lambda1, lambda2, alpha, global_tol, sub_tol, max_iter)
         }
-        
     }
 
     object[['cfd_matrices']] <- fitted_obj[['row_matrices']]
