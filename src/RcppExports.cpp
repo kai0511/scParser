@@ -182,6 +182,31 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// sample_optimize
+List sample_optimize(const mat& data, const List& cfd_factors, mat column_factor, const umat& cfd_indicators, mat cell_factor, mat gene_factor, const unsigned int num_batch, const unsigned int predefined_batch, const uvec batch_assignment, const double lambda1, const double lambda2, const double alpha, const double global_tol, const double sub_tol, const unsigned int max_iter);
+RcppExport SEXP _SR2_sample_optimize(SEXP dataSEXP, SEXP cfd_factorsSEXP, SEXP column_factorSEXP, SEXP cfd_indicatorsSEXP, SEXP cell_factorSEXP, SEXP gene_factorSEXP, SEXP num_batchSEXP, SEXP predefined_batchSEXP, SEXP batch_assignmentSEXP, SEXP lambda1SEXP, SEXP lambda2SEXP, SEXP alphaSEXP, SEXP global_tolSEXP, SEXP sub_tolSEXP, SEXP max_iterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const mat& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const List& >::type cfd_factors(cfd_factorsSEXP);
+    Rcpp::traits::input_parameter< mat >::type column_factor(column_factorSEXP);
+    Rcpp::traits::input_parameter< const umat& >::type cfd_indicators(cfd_indicatorsSEXP);
+    Rcpp::traits::input_parameter< mat >::type cell_factor(cell_factorSEXP);
+    Rcpp::traits::input_parameter< mat >::type gene_factor(gene_factorSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type num_batch(num_batchSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type predefined_batch(predefined_batchSEXP);
+    Rcpp::traits::input_parameter< const uvec >::type batch_assignment(batch_assignmentSEXP);
+    Rcpp::traits::input_parameter< const double >::type lambda1(lambda1SEXP);
+    Rcpp::traits::input_parameter< const double >::type lambda2(lambda2SEXP);
+    Rcpp::traits::input_parameter< const double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< const double >::type global_tol(global_tolSEXP);
+    Rcpp::traits::input_parameter< const double >::type sub_tol(sub_tolSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type max_iter(max_iterSEXP);
+    rcpp_result_gen = Rcpp::wrap(sample_optimize(data, cfd_factors, column_factor, cfd_indicators, cell_factor, gene_factor, num_batch, predefined_batch, batch_assignment, lambda1, lambda2, alpha, global_tol, sub_tol, max_iter));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_SR2_coordinate_descent", (DL_FUNC) &_SR2_coordinate_descent, 8},
@@ -193,6 +218,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_SR2_partial_optimize", (DL_FUNC) &_SR2_partial_optimize, 9},
     {"_SR2_optimize", (DL_FUNC) &_SR2_optimize, 14},
     {"_SR2_batch_optimize", (DL_FUNC) &_SR2_batch_optimize, 15},
+    {"_SR2_sample_optimize", (DL_FUNC) &_SR2_sample_optimize, 15},
     {NULL, NULL, 0}
 };
 

@@ -750,13 +750,16 @@ List sample_optimize(const mat& data, const List& cfd_factors, mat column_factor
     uvec batch_ids = unique(batch_assignment);
     vec trace_ZtZ = zeros(num_batch), trace_RtR = zeros(num_batch);
 
-    mat gram, residual, batch_row_factor, batch_cell_factor; // row_factor = zeros(size(cell_factor));
+    mat gram, residual, batch_row_factor, batch_cell_factor, row_factor = zeros(size(cell_factor));
     mat XtX = zeros(rank, rank), Xty = zeros(rank, column_factor.n_cols), inv_XtX = zeros(rank, rank);
-    mat cfd_XtX = zeros(rank, rank), cell_StS = zeros(size(cfd_XtX));
-    mat cfd_XtZ = zeros(rank, column_factor.n_cols), cell_StZ = zeros(size(cfd_XtZ));
+    mat cell_StS = zeros(rank, rank), cell_StZ = zeros(rank, column_factor.n_cols);
+    // mat cfd_XtX = zeros(rank, rank), cell_StS = zeros(size(cfd_XtX));
+    // mat cfd_XtZ = zeros(rank, column_factor.n_cols), cell_StZ = zeros(size(cfd_XtZ));
+    // mat cfd_XtZ = zeros(rank, column_factor.n_cols), cell_StZ = zeros(size(cfd_XtZ));
 
-    cube XtX = zeros(rank, rank, num_batch), StS = zeros(size(XtX));
-    cube XtZ = zeros(rank, column_factor.n_cols, num_batch), StZ = zeros(size(XtZ));
+    // cube XtX = zeros(rank, rank, num_batch), StS = zeros(size(XtX));
+    // cube XtZ = zeros(rank, column_factor.n_cols, num_batch), StZ = zeros(size(XtZ));
+    cube StS = zeros(rank, rank, num_batch), StZ = zeros(rank, column_factor.n_cols, num_batch);
 
     // check whether the number of the confounding matrices is equal to the number of confounding indicators.
     if(cfd_num != cfd_indicators.n_cols){
@@ -826,14 +829,14 @@ List sample_optimize(const mat& data, const List& cfd_factors, mat column_factor
         
         XtX = row_factor.t() * row_factor;
         Xty = row_factor.t() * residual;
-        XtX.diag() += lambda; 
+        XtX.diag() += lambda1; 
         inv_XtX = inv(XtX);
 
         #if defined(_OPENMP)
-            #pragma omp parallel for num_threads(n_cores) schedule(dynamic, 50)
+            #pragma omp parallel for num_threads(10) schedule(dynamic, 50)
         #endif
         for(unsigned int i = 0; i < residual.n_cols; i++) {
-            c_factor.col(i) = inv_XtX * Xty.col(i);
+            column_factor.col(i) = inv_XtX * Xty.col(i);
         }
         residual = data - row_factor * column_factor;
 
@@ -863,7 +866,7 @@ List sample_optimize(const mat& data, const List& cfd_factors, mat column_factor
     // assign row indices into batches, whose sizes are determined by num_batch
     field<uvec> batches(num_batch);
     if(predefined_batch == 1){
-        for(i = 0; i < size(batch_ids); i++){
+        for(i = 0; i < batch_ids.n_elem; i++){
             batches(i) = find(batch_assignment == batch_ids(i));
         }
     }else{
@@ -871,7 +874,7 @@ List sample_optimize(const mat& data, const List& cfd_factors, mat column_factor
     }
 
     // place indices of confounders into arma::field for computational consideration
-    field<mat> index_matrices(cfd_num);
+    // field<mat> index_matrices(cfd_num);
     field<mat> cfd_cnts(cfd_num);
     for(i = 0; i < cfd_num; i ++) {
         uvec levels = unique(cfd_indicators.col(i));
