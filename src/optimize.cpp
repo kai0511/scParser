@@ -733,3 +733,247 @@ List batch_optimize(const mat& data, const List& cfd_factors, mat column_factor,
                         Named("gene_factor") = gene_factor,
                         Named("loss") = loss);
 }
+
+// [[Rcpp::export]]
+List sample_optimize(const mat& data, const List& cfd_factors, mat column_factor, const umat& cfd_indicators,
+                    mat cell_factor, mat gene_factor, const unsigned int num_batch, const unsigned int predefined_batch, const uvec batch_assignment, 
+                    const double lambda1 = 0.1, const double lambda2 = 0.01, const double alpha = 1.0,
+                    const double global_tol = 1e-10, const double sub_tol = 1e-5, const unsigned int max_iter = 10000){
+
+    cout.precision(12);
+    // time_t tic, toc;
+    unsigned int i, iter = 0, k, rank = cell_factor.n_cols, cfd_num = cfd_factors.size();
+    double loss = std::numeric_limits<double>::max(); // decay = 1.0;
+    double pre_loss, delta_loss, train_rmse, sum_residual = 0.0;
+    uvec ids, ord;
+
+    uvec batch_ids = unique(batch_assignment);
+    vec trace_ZtZ = zeros(num_batch), trace_RtR = zeros(num_batch);
+
+    mat gram, residual, batch_row_factor, batch_cell_factor; // row_factor = zeros(size(cell_factor));
+    mat XtX = zeros(rank, rank), Xty = zeros(rank, column_factor.n_cols), inv_XtX = zeros(rank, rank);
+    mat cfd_XtX = zeros(rank, rank), cell_StS = zeros(size(cfd_XtX));
+    mat cfd_XtZ = zeros(rank, column_factor.n_cols), cell_StZ = zeros(size(cfd_XtZ));
+
+    cube XtX = zeros(rank, rank, num_batch), StS = zeros(size(XtX));
+    cube XtZ = zeros(rank, column_factor.n_cols, num_batch), StZ = zeros(size(XtZ));
+
+    // check whether the number of the confounding matrices is equal to the number of confounding indicators.
+    if(cfd_num != cfd_indicators.n_cols){
+        cout << "The number of confounding matrices should be the same as the column number of cfd_indicators." << endl;
+        exit(1);
+    }
+
+    // place indices of confounders into arma::field for computational consideration
+    field<mat> index_matrices(cfd_num);
+    field<vec> confd_counts(cfd_num);
+    for(i = 0; i < cfd_num; i ++) {
+        uvec levels = unique(cfd_indicators.col(i));
+        mat cfd_idx = zeros(cfd_indicators.n_rows, levels.n_elem);
+
+        for(unsigned int k = 0; k < levels.n_elem; k++) {
+            vec tmp = cfd_idx.col(k);
+            tmp.elem(find(cfd_indicators.col(i) == levels(k))).ones();
+            cfd_idx.col(k) = tmp;
+        }
+        index_matrices(i) = cfd_idx;
+        confd_counts(i) = trans(sum(cfd_idx));
+    }
+
+    // move confounding matrices from Rcpp::List into arma::field
+    field<mat> cfd_matrices(cfd_num);
+    for(i = 0; i < cfd_num; i ++) {
+        Rcpp::NumericMatrix temp = cfd_factors[i];
+        cfd_matrices(i) = mat(temp.begin(), temp.nrow(), temp.ncol(), false);
+        row_factor += index_matrices(i) * cfd_matrices(i);
+    }
+
+    // check the fitting with initial values
+    residual = data - row_factor * column_factor;
+
+    // compute loss
+    loss = sum_residual/2;
+    for(unsigned int i = 0; i < cfd_matrices.n_elem; i++){
+        loss += lambda1 * pow(norm(cfd_matrices(i), "F"), 2)/2;
+    }
+    loss += lambda1 * pow(norm(column_factor, "F"), 2)/2;
+
+    cout << "Begin step 1:" << endl;
+    while(iter <= max_iter) {
+
+        if(iter % 10 == 0){
+            cout << "Iteration " << iter << " ---------------------------------" << endl;
+        }
+        
+        // update all confonding matrices
+        gram = column_factor * column_factor.t();
+        for(i = 0; i < cfd_num; i++){
+
+            residual += index_matrices(i) * cfd_matrices(i) * column_factor;
+            fit_cfd_row(residual, cfd_matrices(i), column_factor, index_matrices(i), confd_counts(i), gram, lambda1);
+
+            // a trick to reduce computational burden
+            if(i != cfd_num - 1){
+                residual -= index_matrices(i) * cfd_matrices(i) * column_factor;
+            }
+        }
+
+        // update columm_factor
+        row_factor.zeros();
+        for(i = 0; i < cfd_num; i ++) {
+            row_factor += index_matrices(i) * cfd_matrices(i);
+        }
+        
+        XtX = row_factor.t() * row_factor;
+        Xty = row_factor.t() * residual;
+        XtX.diag() += lambda; 
+        inv_XtX = inv(XtX);
+
+        #if defined(_OPENMP)
+            #pragma omp parallel for num_threads(n_cores) schedule(dynamic, 50)
+        #endif
+        for(unsigned int i = 0; i < residual.n_cols; i++) {
+            c_factor.col(i) = inv_XtX * Xty.col(i);
+        }
+        residual = data - row_factor * column_factor;
+
+        // check fitting every 10 steps
+        if(iter % 10 == 0){
+
+            // compute loss
+            pre_loss = loss;
+            loss = sum_residual/2;
+            for(unsigned int i = 0; i < cfd_matrices.n_elem; i++){
+                loss += lambda1 * pow(norm(cfd_matrices(i), "F"), 2)/2;
+            }
+            loss += lambda1 * pow(norm(column_factor, "F"), 2)/2; 
+
+            delta_loss = pre_loss - loss;
+            cout << "Delta loss for iter " << iter << ":" << delta_loss << endl;
+
+            if(delta_loss/pre_loss < global_tol){
+                break;
+            }
+        }
+        iter++;
+    }
+
+    cout << "Begin step 2:" << endl;
+
+    // assign row indices into batches, whose sizes are determined by num_batch
+    field<uvec> batches(num_batch);
+    if(predefined_batch == 1){
+        for(i = 0; i < size(batch_ids); i++){
+            batches(i) = find(batch_assignment == batch_ids(i));
+        }
+    }else{
+        batches = generate_batches(data.n_rows, num_batch);
+    }
+
+    // place indices of confounders into arma::field for computational consideration
+    field<mat> index_matrices(cfd_num);
+    field<mat> cfd_cnts(cfd_num);
+    for(i = 0; i < cfd_num; i ++) {
+        uvec levels = unique(cfd_indicators.col(i));
+        mat cfd_idx = zeros(cfd_indicators.n_rows, levels.n_elem);
+
+        for(unsigned int k = 0; k < levels.n_elem; k++) {
+            vec tmp = cfd_idx.col(k);
+            tmp.elem(find(cfd_indicators.col(i) == levels(k))).ones();
+            cfd_idx.col(k) = tmp;
+        }
+        index_matrices(i) = cfd_idx;
+
+        mat tmp = zeros(levels.n_elem, num_batch);
+        for(unsigned int k = 0; k < num_batch; k++){
+            tmp.col(k) = trans(sum(cfd_idx.rows(batches(k))));
+        }
+        cfd_cnts(i) = tmp;
+    }
+
+    while(iter <= max_iter) {
+
+        if(iter % 10 == 0){
+            cout << "Iteration " << iter << " ---------------------------------" << endl;
+        }
+        
+        // sum_residual = 0.0;
+        ord = randperm(num_batch);
+        for(unsigned int b = 0; b < num_batch; b++){
+            k = ord(b);
+            ids = batches(k);
+
+            batch_cell_factor = cell_factor.rows(ids);
+            fit_coding(residual.rows(ids), batch_cell_factor, gene_factor, lambda2, alpha, 0);
+            cell_factor.rows(ids) = batch_cell_factor;
+
+            // remove past information to improve convergence.
+            if(iter > 0){
+                cell_StS -= StS.slice(k);
+                cell_StZ -= StZ.slice(k);
+            }
+
+            StS.slice(k) = trans(batch_cell_factor) * batch_cell_factor;
+            StZ.slice(k) = trans(batch_cell_factor) * residual.rows(ids);
+            // trace_ZtZ(k) = trace(trans(residual) * residual);
+            // trace_ZtZ(k) = pow(norm(residual, "F"), 2);
+            trace_ZtZ(k) = pow(norm(residual.rows(ids), "F"), 2);
+            cell_StS += StS.slice(k);
+            cell_StZ += StZ.slice(k);
+
+            if(iter == 0){
+                gene_factor = lagrange_dual(cell_StS/(b+1), cell_StZ/(b+1), 1, 100, 1e-4);
+            }else{
+                gene_factor = lagrange_dual(cell_StS/num_batch, cell_StZ/num_batch, 1, 100, 1e-4);
+            }
+            // residual -= batch_cell_factor * gene_factor;
+            // sum_residual += accu(sum(square(residual), 1));
+        }
+
+        // check fitting every 10 steps
+        if(iter % 10 == 0){
+
+            // compute the total sum of squared difference
+            // sum_residual = trace(trans(gene_factor) * cell_StS * gene_factor) - 2 * trace(trans(gene_factor) * cell_StZ) + sum(trace_ZtZ);
+            sum_residual = pow(norm(residual - cell_factor * gene_factor, "F"), 2);
+
+            // calculate RMSE on the train set
+            train_rmse = std::sqrt(sum_residual/(data.n_rows * data.n_cols));
+
+            pre_loss = loss;
+
+            // add squared residual
+            loss = 0.5 * sum_residual/num_batch;
+
+            // add penalty on cell representation
+            if(alpha != 1){
+                loss += 0.5 * lambda2 * (1 - alpha) * pow(norm(cell_factor, "F"), 2)/num_batch;
+            }
+            loss += lambda2 * alpha * sum(sum(abs(cell_factor), 1))/num_batch;
+
+            delta_loss = std::abs(pre_loss - loss);
+
+            cout << "Train RMSE for iter " << iter << ":" << train_rmse << endl;
+            cout << "Loss for iter " << iter << ":" << loss << endl;
+            cout << "Delta loss for iter " << iter << ":" << delta_loss << endl;
+
+            if(delta_loss/pre_loss < global_tol){
+                break;
+            }
+        }
+        iter++;
+    }
+
+    // put the updated confounding matrices into a R list
+    List row_matrices;
+    for(i = 0; i < cfd_num; i ++) {
+        row_matrices["factor" + std::to_string(i)] = cfd_matrices(i);
+    }
+
+    return List::create(Named("row_matrices") = row_matrices,
+                        Named("column_factor") = column_factor,
+                        Named("cell_factor") = cell_factor,
+                        Named("gene_factor") = gene_factor,
+                        Named("loss") = loss);
+}
+
