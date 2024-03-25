@@ -530,7 +530,7 @@ List batch_optimize(const mat& data, const List& cfd_factors, mat column_factor,
     // assign row indices into batches, whose sizes are determined by num_batch
     field<uvec> batches(num_batch);
     if(predefined_batch == 1){
-        for(i = 0; i < size(batch_ids); i++){
+        for(i = 0; i < batch_ids.n_elem; i++){
             batches(i) = find(batch_assignment == batch_ids(i));
         }
     }else{

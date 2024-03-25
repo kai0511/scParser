@@ -33,7 +33,7 @@ optimize <- function(data, train_indicator, cfd_factors, column_factor, cfd_indi
     .Call(`_SR2_optimize`, data, train_indicator, cfd_factors, column_factor, cfd_indicators, cell_factor, gene_factor, lambda1, lambda2, alpha, tuning, global_tol, sub_tol, max_iter)
 }
 
-batch_optimize <- function(data, cfd_factors, column_factor, cfd_indicators, cell_factor, gene_factor, num_batch, lambda1 = 0.1, lambda2 = 0.01, alpha = 1.0, global_tol = 1e-10, sub_tol = 1e-5, max_iter = 10000L) {
-    .Call(`_SR2_batch_optimize`, data, cfd_factors, column_factor, cfd_indicators, cell_factor, gene_factor, num_batch, lambda1, lambda2, alpha, global_tol, sub_tol, max_iter)
+batch_optimize <- function(data, cfd_factors, column_factor, cfd_indicators, cell_factor, gene_factor, num_batch, predefined_batch, batch_assignment, lambda1 = 0.1, lambda2 = 0.01, alpha = 1.0, global_tol = 1e-10, sub_tol = 1e-5, max_iter = 10000L) {
+    .Call(`_SR2_batch_optimize`, data, cfd_factors, column_factor, cfd_indicators, cell_factor, gene_factor, num_batch, predefined_batch, batch_assignment, lambda1, lambda2, alpha, global_tol, sub_tol, max_iter)
 }
 
