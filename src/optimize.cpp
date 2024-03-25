@@ -795,7 +795,7 @@ List sample_optimize(const mat& data, const List& cfd_factors, mat column_factor
     residual = data - row_factor * column_factor;
 
     // compute loss
-    loss = sum_residual/2;
+    loss = pow(norm(residual, "F"), 2)/2;
     for(unsigned int i = 0; i < cfd_matrices.n_elem; i++){
         loss += lambda1 * pow(norm(cfd_matrices(i), "F"), 2)/2;
     }
@@ -845,14 +845,14 @@ List sample_optimize(const mat& data, const List& cfd_factors, mat column_factor
 
             // compute loss
             pre_loss = loss;
-            loss = sum_residual/2;
+            loss = pow(norm(residual, "F"), 2)/2;
             for(unsigned int i = 0; i < cfd_matrices.n_elem; i++){
                 loss += lambda1 * pow(norm(cfd_matrices(i), "F"), 2)/2;
             }
             loss += lambda1 * pow(norm(column_factor, "F"), 2)/2; 
 
             delta_loss = pre_loss - loss;
-            cout << "Delta loss for iter " << iter << ":" << delta_loss << endl;
+            cout << "[Step 1] |  Delta loss for iter " << iter << ":" << delta_loss << endl;
 
             if(delta_loss/pre_loss < global_tol){
                 break;
@@ -956,9 +956,9 @@ List sample_optimize(const mat& data, const List& cfd_factors, mat column_factor
 
             delta_loss = std::abs(pre_loss - loss);
 
-            cout << "Train RMSE for iter " << iter << ":" << train_rmse << endl;
-            cout << "Loss for iter " << iter << ":" << loss << endl;
-            cout << "Delta loss for iter " << iter << ":" << delta_loss << endl;
+            cout << "[Step 2] | Train RMSE for iter " << iter << ":" << train_rmse << endl;
+            cout << "[Step 2] | Loss for iter " << iter << ":" << loss << endl;
+            cout << "[Step 2] | Delta loss for iter " << iter << ":" << delta_loss << endl;
 
             if(delta_loss/pre_loss < global_tol){
                 break;
