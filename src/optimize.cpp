@@ -855,7 +855,7 @@ List sample_optimize(const mat& data, const List& cfd_factors, mat column_factor
             cout << "[Step 1] |  Loss for iter " << iter << ":" << loss << endl;
             cout << "[Step 1] |  Delta loss for iter " << iter << ":" << delta_loss << endl;
 
-            if(delta_loss/pre_loss < global_tol){
+            if(delta_loss/pre_loss < 1e-6){
                 break;
             }
         }
