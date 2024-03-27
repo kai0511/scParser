@@ -234,7 +234,7 @@ tune <- function(object, latent_rank, cfd_rank = NULL, lambda1 = 0.1, lambda2 = 
             gene_factor <- matrix(init_parameters(latent_rank * ncol(object$data)), nrow = latent_rank)
 
             fitted_obj <- optimize(object$data, train_indicator, confounder_list, column_factor, object$confounders,
-                                   cell_factor, gene_factor, lambda1, 1, lambda2, 1, global_tol, sub_tol, tuning_iter)
+                                   cell_factor, gene_factor, lambda1, 0.5, lambda2, 1, global_tol, sub_tol, tuning_iter)
 
             if(is.null(reg_tuning)){
                 reg_tuning <- c(round(param_grid[i, ], 2), fitted_obj$test_rmse)
