@@ -185,6 +185,8 @@ For Details of downstream analysis with results from scParser, please refer to p
 ## License
 The software is released under MIT License.
 
+Copyright (c) 2022 Kai.
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
