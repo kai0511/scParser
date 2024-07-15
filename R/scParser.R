@@ -1,19 +1,19 @@
 #' Create an An object with the provided parameters
 #'
-#' @param object An SC2 oject
+#' @param object An scParser oject
 #' @param split_ratio A proportion of elements will be drawn from data as testset, and the left over is trainset.
 #' @param global_tol The global convergence criteria. One meet, the optimization will be terminated.
 #' @param sub_tol The convergence creteria for elastic net problems, which decays with decreasing the loss of objective.
 #' @param tuning_iter The number of iterations for each combination of tuning parameters
 #' @param max_iter The maxiumme number of iterations. When it is reached, iteraction will terminated even if the global convergence criteria does not meet.
 #'
-#' @return An SC2 object
+#' @return An scParser object
 #' @export
 #' 
-SR2 <- function(data, confounders, split_ratio = 0.1, global_tol = 1e-8, sub_tol = 1e-5, tuning_iter = 30, max_iter = 10000){
+scParser <- function(data, confounders, split_ratio = 0.1, global_tol = 1e-8, sub_tol = 1e-5, tuning_iter = 30, max_iter = 10000){
 
     # create insider class
-    object <- structure(list(), class = "SR2")
+    object <- structure(list(), class = "scParser")
 
     object[['data']] <- data
     object[['confounders']] <- confounders
@@ -66,7 +66,7 @@ partial_tune <- function(object, cfd_rank, lambda1 = 0.1){
             }else{
                 rank_tuning <- rbind(rank_tuning, c(cfd_rank, fitted_obj$test_rmse))
             }
-            write.csv(rank_tuning, file = paste0('SC2_rank_tuning_result.csv'))
+            write.csv(rank_tuning, file = paste0('scParser_rank_tuning_result.csv'))
         }
     }
 
@@ -102,7 +102,7 @@ partial_tune <- function(object, cfd_rank, lambda1 = 0.1){
             }else{
                 reg_tuning <- rbind(reg_tuning, c(round(param_grid[i], 2), fitted_obj$test_rmse))
             }
-            write.csv(reg_tuning, file = paste0('SC2_R', cfd_rank, '_reg_tuning_result.csv'))
+            write.csv(reg_tuning, file = paste0('scParser_R', cfd_rank, '_reg_tuning_result.csv'))
         }
     }
     return(list(rank_tuning = rank_tuning, reg_tuning = reg_tuning))
@@ -133,7 +133,7 @@ partial_fit <- function(object, cfd_rank, lambda1){
 
 #' Tuning hyperparameters with the provided parameters.
 #'
-#' @param object An SC2 oject.
+#' @param object An scParser oject.
 #' @param data
 #' @param confounder A matrix of dummy variables, which indicates the belonging of each observation for the variables. Here only discreate variables are allowed, such as disease status, gender, tissue, or other biological variables.
 #' @param latent_rank  An integer vector, from which the latent rank for cell representations is selected. 
@@ -199,7 +199,7 @@ tune <- function(object, latent_rank, cfd_rank = NULL, lambda1 = 0.1, lambda2 = 
             }else{
                 rank_tuning <- rbind(rank_tuning, c(cfd_rank, latent_rank, fitted_obj$test_rmse))
             }
-            write.csv(rank_tuning, file = paste0('SC2_rank_tuning_result.csv'))
+            write.csv(rank_tuning, file = paste0('scParser_rank_tuning_result.csv'))
         }
     }
 
@@ -242,7 +242,7 @@ tune <- function(object, latent_rank, cfd_rank = NULL, lambda1 = 0.1, lambda2 = 
             }else{
                 reg_tuning <- rbind(reg_tuning, c(round(param_grid[i,], 2), fitted_obj$test_rmse))
             }
-            write.csv(reg_tuning, file = paste0('SC2_R', latent_rank, '_reg_tuning_result.csv'))
+            write.csv(reg_tuning, file = paste0('scParser_R', latent_rank, '_reg_tuning_result.csv'))
         }
     }
     return(list(rank_tuning = rank_tuning, reg_tuning = reg_tuning))

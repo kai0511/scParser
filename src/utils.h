@@ -1,7 +1,7 @@
 #ifndef __UTILS__
 #define __UTILS__
 
-#include "../inst/include/SR2_types.h"
+#include "../inst/include/scParser_types.h"
 
 field<uvec> generate_batches(const unsigned int& sample_size, const unsigned int& num_batch);
 

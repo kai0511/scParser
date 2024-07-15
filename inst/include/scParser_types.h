@@ -1,5 +1,5 @@
-#ifndef __SR2_TYPE__
-#define __SR2_TYPE__
+#ifndef __scParser_TYPE__
+#define __scParser_TYPE__
 
 #define ARMA_USE_BLAS
 #define ARMA_USE_LAPACK

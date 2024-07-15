@@ -1,7 +1,7 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::plugins("cpp11")]]
 
-#include "../inst/include/SR2_types.h"
+#include "../inst/include/scParser_types.h"
 #include <iostream>
 #include "utils.h"
 
