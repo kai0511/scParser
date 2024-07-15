@@ -14,7 +14,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 // coordinate_descent
 vec coordinate_descent(const mat& X, const vec& y, const vec& wstart, const double& lambda, const double& alpha, const mat& XtX, const vec& Xty, const double& tol);
-RcppExport SEXP _SR2_coordinate_descent(SEXP XSEXP, SEXP ySEXP, SEXP wstartSEXP, SEXP lambdaSEXP, SEXP alphaSEXP, SEXP XtXSEXP, SEXP XtySEXP, SEXP tolSEXP) {
+RcppExport SEXP _scParser_coordinate_descent(SEXP XSEXP, SEXP ySEXP, SEXP wstartSEXP, SEXP lambdaSEXP, SEXP alphaSEXP, SEXP XtXSEXP, SEXP XtySEXP, SEXP tolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -32,7 +32,7 @@ END_RCPP
 }
 // strong_coordinate_descent
 vec strong_coordinate_descent(const mat& X, const vec& y, const vec& wstart, const double& lambda, const double& alpha, const mat& XtX, const vec& Xty, const double& tol);
-RcppExport SEXP _SR2_strong_coordinate_descent(SEXP XSEXP, SEXP ySEXP, SEXP wstartSEXP, SEXP lambdaSEXP, SEXP alphaSEXP, SEXP XtXSEXP, SEXP XtySEXP, SEXP tolSEXP) {
+RcppExport SEXP _scParser_strong_coordinate_descent(SEXP XSEXP, SEXP ySEXP, SEXP wstartSEXP, SEXP lambdaSEXP, SEXP alphaSEXP, SEXP XtXSEXP, SEXP XtySEXP, SEXP tolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -50,7 +50,7 @@ END_RCPP
 }
 // lagrange_dual
 mat lagrange_dual(const mat& gram, const mat& cdx, const int& reg, const int& max_iter, const double& tol);
-RcppExport SEXP _SR2_lagrange_dual(SEXP gramSEXP, SEXP cdxSEXP, SEXP regSEXP, SEXP max_iterSEXP, SEXP tolSEXP) {
+RcppExport SEXP _scParser_lagrange_dual(SEXP gramSEXP, SEXP cdxSEXP, SEXP regSEXP, SEXP max_iterSEXP, SEXP tolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -65,7 +65,7 @@ END_RCPP
 }
 // tune_coding
 void tune_coding(const mat& residual, const umat& indicator, mat& row_factor, const mat& c_factor, const double lambda, const double alpha, int tuning, int n_cores, double tol);
-RcppExport SEXP _SR2_tune_coding(SEXP residualSEXP, SEXP indicatorSEXP, SEXP row_factorSEXP, SEXP c_factorSEXP, SEXP lambdaSEXP, SEXP alphaSEXP, SEXP tuningSEXP, SEXP n_coresSEXP, SEXP tolSEXP) {
+RcppExport SEXP _scParser_tune_coding(SEXP residualSEXP, SEXP indicatorSEXP, SEXP row_factorSEXP, SEXP c_factorSEXP, SEXP lambdaSEXP, SEXP alphaSEXP, SEXP tuningSEXP, SEXP n_coresSEXP, SEXP tolSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const mat& >::type residual(residualSEXP);
@@ -83,7 +83,7 @@ END_RCPP
 }
 // fit_coding
 void fit_coding(const mat& residual, mat& row_factor, const mat& c_factor, const double lambda, const double alpha, int tuning, int n_cores, double tol);
-RcppExport SEXP _SR2_fit_coding(SEXP residualSEXP, SEXP row_factorSEXP, SEXP c_factorSEXP, SEXP lambdaSEXP, SEXP alphaSEXP, SEXP tuningSEXP, SEXP n_coresSEXP, SEXP tolSEXP) {
+RcppExport SEXP _scParser_fit_coding(SEXP residualSEXP, SEXP row_factorSEXP, SEXP c_factorSEXP, SEXP lambdaSEXP, SEXP alphaSEXP, SEXP tuningSEXP, SEXP n_coresSEXP, SEXP tolSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const mat& >::type residual(residualSEXP);
@@ -100,7 +100,7 @@ END_RCPP
 }
 // optimize_base
 void optimize_base(const mat& data, const umat& indicator, const mat& row_factor, mat& c_factor, const unsigned int& tuning, const double& tol, const unsigned int& iter);
-RcppExport SEXP _SR2_optimize_base(SEXP dataSEXP, SEXP indicatorSEXP, SEXP row_factorSEXP, SEXP c_factorSEXP, SEXP tuningSEXP, SEXP tolSEXP, SEXP iterSEXP) {
+RcppExport SEXP _scParser_optimize_base(SEXP dataSEXP, SEXP indicatorSEXP, SEXP row_factorSEXP, SEXP c_factorSEXP, SEXP tuningSEXP, SEXP tolSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const mat& >::type data(dataSEXP);
@@ -116,7 +116,7 @@ END_RCPP
 }
 // partial_optimize
 List partial_optimize(const mat& data, const umat& train_indicator, List& cfd_factors, mat column_factor, const umat& cfd_indicators, const double lambda1, const int tuning, const double global_tol, const unsigned int max_iter);
-RcppExport SEXP _SR2_partial_optimize(SEXP dataSEXP, SEXP train_indicatorSEXP, SEXP cfd_factorsSEXP, SEXP column_factorSEXP, SEXP cfd_indicatorsSEXP, SEXP lambda1SEXP, SEXP tuningSEXP, SEXP global_tolSEXP, SEXP max_iterSEXP) {
+RcppExport SEXP _scParser_partial_optimize(SEXP dataSEXP, SEXP train_indicatorSEXP, SEXP cfd_factorsSEXP, SEXP column_factorSEXP, SEXP cfd_indicatorsSEXP, SEXP lambda1SEXP, SEXP tuningSEXP, SEXP global_tolSEXP, SEXP max_iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -135,7 +135,7 @@ END_RCPP
 }
 // optimize
 List optimize(const mat& data, const umat& train_indicator, List& cfd_factors, mat column_factor, const umat& cfd_indicators, mat cell_factor, mat gene_factor, const double lambda1, const double lambda2, const double alpha, const int tuning, const double global_tol, const double sub_tol, const unsigned int max_iter);
-RcppExport SEXP _SR2_optimize(SEXP dataSEXP, SEXP train_indicatorSEXP, SEXP cfd_factorsSEXP, SEXP column_factorSEXP, SEXP cfd_indicatorsSEXP, SEXP cell_factorSEXP, SEXP gene_factorSEXP, SEXP lambda1SEXP, SEXP lambda2SEXP, SEXP alphaSEXP, SEXP tuningSEXP, SEXP global_tolSEXP, SEXP sub_tolSEXP, SEXP max_iterSEXP) {
+RcppExport SEXP _scParser_optimize(SEXP dataSEXP, SEXP train_indicatorSEXP, SEXP cfd_factorsSEXP, SEXP column_factorSEXP, SEXP cfd_indicatorsSEXP, SEXP cell_factorSEXP, SEXP gene_factorSEXP, SEXP lambda1SEXP, SEXP lambda2SEXP, SEXP alphaSEXP, SEXP tuningSEXP, SEXP global_tolSEXP, SEXP sub_tolSEXP, SEXP max_iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -159,7 +159,7 @@ END_RCPP
 }
 // batch_optimize
 List batch_optimize(const mat& data, const List& cfd_factors, mat column_factor, const umat& cfd_indicators, mat cell_factor, mat gene_factor, const unsigned int num_batch, const unsigned int predefined_batch, const uvec batch_assignment, const double lambda1, const double lambda2, const double alpha, const double global_tol, const double sub_tol, const unsigned int max_iter);
-RcppExport SEXP _SR2_batch_optimize(SEXP dataSEXP, SEXP cfd_factorsSEXP, SEXP column_factorSEXP, SEXP cfd_indicatorsSEXP, SEXP cell_factorSEXP, SEXP gene_factorSEXP, SEXP num_batchSEXP, SEXP predefined_batchSEXP, SEXP batch_assignmentSEXP, SEXP lambda1SEXP, SEXP lambda2SEXP, SEXP alphaSEXP, SEXP global_tolSEXP, SEXP sub_tolSEXP, SEXP max_iterSEXP) {
+RcppExport SEXP _scParser_batch_optimize(SEXP dataSEXP, SEXP cfd_factorsSEXP, SEXP column_factorSEXP, SEXP cfd_indicatorsSEXP, SEXP cell_factorSEXP, SEXP gene_factorSEXP, SEXP num_batchSEXP, SEXP predefined_batchSEXP, SEXP batch_assignmentSEXP, SEXP lambda1SEXP, SEXP lambda2SEXP, SEXP alphaSEXP, SEXP global_tolSEXP, SEXP sub_tolSEXP, SEXP max_iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -184,7 +184,7 @@ END_RCPP
 }
 // sample_optimize
 List sample_optimize(const mat& data, const List& cfd_factors, mat column_factor, const umat& cfd_indicators, mat cell_factor, mat gene_factor, const unsigned int num_batch, const unsigned int predefined_batch, const uvec batch_assignment, const double lambda1, const double lambda2, const double alpha, const double global_tol, const double sub_tol, const unsigned int max_iter);
-RcppExport SEXP _SR2_sample_optimize(SEXP dataSEXP, SEXP cfd_factorsSEXP, SEXP column_factorSEXP, SEXP cfd_indicatorsSEXP, SEXP cell_factorSEXP, SEXP gene_factorSEXP, SEXP num_batchSEXP, SEXP predefined_batchSEXP, SEXP batch_assignmentSEXP, SEXP lambda1SEXP, SEXP lambda2SEXP, SEXP alphaSEXP, SEXP global_tolSEXP, SEXP sub_tolSEXP, SEXP max_iterSEXP) {
+RcppExport SEXP _scParser_sample_optimize(SEXP dataSEXP, SEXP cfd_factorsSEXP, SEXP column_factorSEXP, SEXP cfd_indicatorsSEXP, SEXP cell_factorSEXP, SEXP gene_factorSEXP, SEXP num_batchSEXP, SEXP predefined_batchSEXP, SEXP batch_assignmentSEXP, SEXP lambda1SEXP, SEXP lambda2SEXP, SEXP alphaSEXP, SEXP global_tolSEXP, SEXP sub_tolSEXP, SEXP max_iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -209,20 +209,20 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_SR2_coordinate_descent", (DL_FUNC) &_SR2_coordinate_descent, 8},
-    {"_SR2_strong_coordinate_descent", (DL_FUNC) &_SR2_strong_coordinate_descent, 8},
-    {"_SR2_lagrange_dual", (DL_FUNC) &_SR2_lagrange_dual, 5},
-    {"_SR2_tune_coding", (DL_FUNC) &_SR2_tune_coding, 9},
-    {"_SR2_fit_coding", (DL_FUNC) &_SR2_fit_coding, 8},
-    {"_SR2_optimize_base", (DL_FUNC) &_SR2_optimize_base, 7},
-    {"_SR2_partial_optimize", (DL_FUNC) &_SR2_partial_optimize, 9},
-    {"_SR2_optimize", (DL_FUNC) &_SR2_optimize, 14},
-    {"_SR2_batch_optimize", (DL_FUNC) &_SR2_batch_optimize, 15},
-    {"_SR2_sample_optimize", (DL_FUNC) &_SR2_sample_optimize, 15},
+    {"_scParser_coordinate_descent", (DL_FUNC) &_scParser_coordinate_descent, 8},
+    {"_scParser_strong_coordinate_descent", (DL_FUNC) &_scParser_strong_coordinate_descent, 8},
+    {"_scParser_lagrange_dual", (DL_FUNC) &_scParser_lagrange_dual, 5},
+    {"_scParser_tune_coding", (DL_FUNC) &_scParser_tune_coding, 9},
+    {"_scParser_fit_coding", (DL_FUNC) &_scParser_fit_coding, 8},
+    {"_scParser_optimize_base", (DL_FUNC) &_scParser_optimize_base, 7},
+    {"_scParser_partial_optimize", (DL_FUNC) &_scParser_partial_optimize, 9},
+    {"_scParser_optimize", (DL_FUNC) &_scParser_optimize, 14},
+    {"_scParser_batch_optimize", (DL_FUNC) &_scParser_batch_optimize, 15},
+    {"_scParser_sample_optimize", (DL_FUNC) &_scParser_sample_optimize, 15},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_SR2(DllInfo *dll) {
+RcppExport void R_init_scParser(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

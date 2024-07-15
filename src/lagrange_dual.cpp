@@ -2,7 +2,7 @@
 // [[Rcpp::plugins(openmp)]]
 // [[Rcpp::plugins("cpp11")]]
 
-#include "../inst/include/SR2_types.h"
+#include "../inst/include/scParser_types.h"
 #include <iostream>
 #include <omp.h>
 #include "lagrange_dual.h"
