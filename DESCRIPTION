@@ -5,8 +5,7 @@ Version: 1.0
 Date: 2023-03-24
 Author: Kai ZHAO
 Maintainer: Kai ZHAO <zhaokai09@gmail.com>
-Description: One paragraph description of what the package does as one
-        or more full sentences.
+Description: The package implements scParser, an ensemble computational tool for interpretive single-cell RNA-seq data analysis.
 License: Open Source Initiative (also known as the OSI)
 Imports: Rcpp (>= 1.0.9), dplyr
 LinkingTo: Rcpp, RcppArmadillo
