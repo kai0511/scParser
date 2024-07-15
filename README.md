@@ -182,6 +182,9 @@ List of 6
 
 For Details of downstream analysis with results from scParser, please refer to preprint in references. 
 
+## License
+The software is released under the Open Source Initiative (also known as the OSI).
+
 ## References
 Zhao, Kai, et al. "scParser: Sparse Representation Learning for Scalable Single-cell RNA Sequencing Data Analysis." bioRxiv (2023): 2023-08.
 
