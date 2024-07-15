@@ -3,8 +3,8 @@ Type: Package
 Title: What the Package Does in One 'Title Case' Line
 Version: 1.0
 Date: 2023-03-24
-Author: Your Name
-Maintainer: Your Name <your@email.com>
+Author: Kai ZHAO
+Maintainer: Kai ZHAO <zhaokai09@gmail.com>
 Description: One paragraph description of what the package does as one
         or more full sentences.
 License: Open Source Initiative (also known as the OSI)
