@@ -206,5 +206,4 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ## References
-Zhao, Kai, et al. "scParser: Sparse Representation Learning for Scalable Single-cell RNA Sequencing Data Analysis." bioRxiv (2023): 2023-08.
-
+Zhao, K., So, H. C., & Lin, Z. (2024). scParser: sparse representation learning for scalable single-cell RNA sequencing data analysis. Genome Biology, 25(1), 1-28.
