@@ -4,6 +4,7 @@
 
 #include "../inst/include/scParser_types.h"
 #include <iostream>
+#include <iomanip>
 #include <omp.h>
 #include "lagrange_dual.h"
 #include "coordinate_descent.h"
@@ -285,10 +286,6 @@ List partial_optimize(const mat& data, const umat& train_indicator, List& cfd_fa
 
     while(iter <= max_iter) {
 
-        if(iter % 10 == 0){
-            cout << "Iteration " << iter << " ---------------------------------" << endl;
-        }
-        
         // update all confonding matrices
         gram = column_factor * column_factor.t();
         for(i = 0; i < cfd_num; i++){
@@ -307,7 +304,6 @@ List partial_optimize(const mat& data, const umat& train_indicator, List& cfd_fa
             if(i != cfd_num - 1){
                 residual -= index_matrices(i) * cfd_matrices(i) * column_factor;
             }
-
 	        evaluate(residual, train_idx, test_idx, sum_residual, train_rmse, test_rmse, tuning, iter, 1);
         }
 
@@ -322,6 +318,7 @@ List partial_optimize(const mat& data, const umat& train_indicator, List& cfd_fa
 
         // check fitting every 10 steps
         if(iter % 10 == 0){
+            
             evaluate(residual, train_idx, test_idx, sum_residual, train_rmse, test_rmse, tuning, iter, 1);
 
             // compute loss
@@ -333,7 +330,12 @@ List partial_optimize(const mat& data, const umat& train_indicator, List& cfd_fa
             loss += lambda1 * pow(norm(column_factor, "F"), 2)/2; 
 
             delta_loss = pre_loss - loss;
-            cout << "Delta loss for iter " << iter << ":" << delta_loss << endl;
+
+            if(tuning == 0){
+                cout << "Iter " << iter << " | loss: " << loss << " | delta loss: " << delta_loss << " | train rmse: " << train_rmse << endl;
+            } else {
+                cout << "Iter " << iter << " | loss: " << loss << " | delta loss: " << delta_loss << " | train rmse: " << train_rmse << " | test rmse: " << test_rmse << endl;
+            }
 
             if(delta_loss/pre_loss < global_tol){
                 break;
@@ -405,13 +407,9 @@ List optimize(const mat& data, const umat& train_indicator, List& cfd_factors, m
     predict(row_factor, column_factor, cell_factor, gene_factor, predictions);
     residual = data - predictions;
     evaluate(residual, train_idx, test_idx, sum_residual, train_rmse, test_rmse, tuning, iter, 1);
-    loss = compute_loss(cfd_matrices, column_factor, cell_factor, gene_factor, lambda1, lambda2, alpha, sum_residual, 1);
+    loss = compute_loss(cfd_matrices, column_factor, cell_factor, gene_factor, lambda1, lambda2, alpha, sum_residual, 0);
 
     while(iter <= max_iter) {
-
-        if(iter % 10 == 0){
-            cout << "Iteration " << iter << " ---------------------------------" << endl;
-        }
         
         // update all confonding matrices
         gram = column_factor * column_factor.t();
@@ -457,24 +455,15 @@ List optimize(const mat& data, const umat& train_indicator, List& cfd_factors, m
         if(iter % 10 == 0){
             pre_loss = loss;
             evaluate(residual, train_idx, test_idx, sum_residual, train_rmse, test_rmse, tuning, iter, 1);
-            loss = compute_loss(cfd_matrices, column_factor, cell_factor, gene_factor, lambda1, lambda2, alpha, sum_residual, 1);
+            loss = compute_loss(cfd_matrices, column_factor, cell_factor, gene_factor, lambda1, lambda2, alpha, sum_residual, 0);
 
             delta_loss = pre_loss - loss;
-            cout << "Delta loss for iter " << iter << ":" << delta_loss << endl;
-
-            // if(delta_loss/1000 <= 1e-5){
-            //     decay = 1e-5;
-            // }else if(delta_loss/1000 <= 1e-4){
-            //     decay = 1e-4;
-            // }else if(delta_loss/1000 <= 1e-3){
-            //     decay = 1e-3;
-            // }else if(delta_loss/1000 <= 1e-2){
-            //     decay = 1e-2;
-            // }else if(delta_loss/1000 <= 1e-1){
-            //     decay = 1e-1;
-            // }else{
-            //     decay = 1.0;
-            // }
+            
+            if(tuning == 0){
+                cout << "Iter " << iter << " | loss: " << loss << " | delta loss: " << delta_loss << " | train rmse: " << train_rmse << endl;
+            } else {
+                cout << "Iter " << iter << " | loss: " << loss << " | delta loss: " << delta_loss << " | train rmse: " << train_rmse << " | test rmse: " << test_rmse << endl;
+            }
 
             if(delta_loss/pre_loss < global_tol){
                 break;
@@ -567,10 +556,6 @@ List batch_optimize(const mat& data, const List& cfd_factors, mat column_factor,
 
     while(iter <= max_iter) {
 
-        if(iter % 10 == 0){
-            cout << "Iteration " << iter << " ---------------------------------" << endl;
-        }
-        // sum_residual = 0.0;
         ord = randperm(num_batch);
         for(unsigned int b = 0; b < num_batch; b++){
             k = ord(b);
@@ -675,24 +660,7 @@ List batch_optimize(const mat& data, const List& cfd_factors, mat column_factor,
             loss += lambda2 * alpha * sum(sum(abs(cell_factor), 1))/num_batch;
 
             delta_loss = std::abs(pre_loss - loss);
-
-            cout << "Train RMSE for iter " << iter << ":" << train_rmse << endl;
-            cout << "Loss for iter " << iter << ":" << loss << endl;
-            cout << "Delta loss for iter " << iter << ":" << delta_loss << endl;
-
-            // if(delta_loss/1000 <= 1e-5){
-            //     decay = 1e-5;
-            // }else if(delta_loss/1000 <= 1e-4){
-            //     decay = 1e-4;
-            // }else if(delta_loss/1000 <= 1e-3){
-            //     decay = 1e-3;
-            // }else if(delta_loss/1000 <= 1e-2){
-            //     decay = 1e-2;
-            // }else if(delta_loss/1000 <= 1e-1){
-            //     decay = 1e-1;
-            // }else{
-            //     decay = 1.0;
-            // }
+            cout << "Iter " << iter << " | loss: " << loss << " | delta loss: " << delta_loss << " | train rmse: " << train_rmse << endl;
 
             if(delta_loss/pre_loss < global_tol){
                 break;
@@ -803,10 +771,6 @@ List sample_optimize(const mat& data, const List& cfd_factors, mat column_factor
 
     cout << "Begin step 1:" << endl;
     while(iter <= max_iter) {
-
-        if(iter % 10 == 0){
-            cout << "Iteration " << iter << " ---------------------------------" << endl;
-        }
         
         // update all confonding matrices
         gram = column_factor * column_factor.t();
@@ -852,9 +816,8 @@ List sample_optimize(const mat& data, const List& cfd_factors, mat column_factor
             loss += lambda1 * pow(norm(column_factor, "F"), 2)/2; 
 
             delta_loss = pre_loss - loss;
-            cout << "[Step 1] |  Loss for iter " << iter << ":" << loss << endl;
-            cout << "[Step 1] |  Delta loss for iter " << iter << ":" << delta_loss << endl;
-
+            cout << "[Step 1] Iter " << iter << " | loss: " << loss << " | delta loss: " << delta_loss << endl;
+            
             if(delta_loss/pre_loss < 1e-6){
                 break;
             }
@@ -896,10 +859,6 @@ List sample_optimize(const mat& data, const List& cfd_factors, mat column_factor
     }
 
     while(iter <= max_iter) {
-
-        if(iter % 10 == 0){
-            cout << "Iteration " << iter << " ---------------------------------" << endl;
-        }
         
         // sum_residual = 0.0;
         ord = randperm(num_batch);
@@ -956,10 +915,7 @@ List sample_optimize(const mat& data, const List& cfd_factors, mat column_factor
             loss += lambda2 * alpha * sum(sum(abs(cell_factor), 1))/num_batch;
 
             delta_loss = std::abs(pre_loss - loss);
-
-            cout << "[Step 2] | Train RMSE for iter " << iter << ":" << train_rmse << endl;
-            cout << "[Step 2] | Loss for iter " << iter << ":" << loss << endl;
-            cout << "[Step 2] | Delta loss for iter " << iter << ":" << delta_loss << endl;
+            cout << "[Step 2] Iter " << iter << " | loss: " << loss << " | delta loss: " << delta_loss << << " | train rmse: " << train_rmse << endl;
 
             if(delta_loss/pre_loss < global_tol){
                 break;

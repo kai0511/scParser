@@ -13,8 +13,7 @@ double compute_loss(const vec& residual, const vec& beta, const double& lambda, 
 void predict(const mat& row_factor, const mat& column_factor, const mat& cell_factor, const mat& gene_factor, mat& predictions);
 
 void evaluate(mat& residual, const uvec& train_idx, const uvec& test_idx, double& sum_residual, 
-              double& train_rmse, double& test_rmse, const int& tuning, 
-              const int& iter /* = 0*/, const int& verbose /*= 1*/);
+              double& train_rmse, double& test_rmse, const int& tuning);
 
 double compute_loss(const field<mat>& cfd_factor, const mat& column_factor, const mat& cell_factor, const mat& gene_factor, 
                     const double& lambda1, const double& lambda2, const double& alpha, double& sum_residual, const int& verbose /* = 1 */);

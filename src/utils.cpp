@@ -40,8 +40,7 @@ void predict(const mat& row_factor, const mat& column_factor, const mat& cell_fa
 }
 
 void evaluate(mat& residual, const uvec& train_idx, const uvec& test_idx, 
-              double& sum_residual, double& train_rmse, double& test_rmse, const int& tuning, 
-              const int& iter = 0, const int& verbose = 1){
+              double& sum_residual, double& train_rmse, double& test_rmse, const int& tuning){
 
     // residual = data - predictions;
     if(tuning == 0){
@@ -52,37 +51,29 @@ void evaluate(mat& residual, const uvec& train_idx, const uvec& test_idx,
         train_rmse = std::sqrt(sum_residual/train_idx.n_elem);
         test_rmse = std::sqrt(mean(square(residual.elem(test_idx))));
     } 
-
-    if (verbose == 1){
-        cout << "SC2 iter " << iter << ": train rmse = " << train_rmse << endl;
-
-        if(tuning == 1){
-            cout << "SC2 iter " << iter << ": test rmse = " << test_rmse << endl;
-        }
-    }
 }
 
 double compute_loss(const field<mat>& cfd_factor, const mat& column_factor, const mat& cell_factor, const mat& gene_factor, 
-                    const double& lambda1, const double& lambda2, const double& alpha, double& sum_residual, const int& verbose = 1){
+                    const double& lambda1, const double& lambda2, const double& alpha, double& sum_residual, const int& verbose = 0){
 
     // l2 penalty 
     double row_reg = 0.0;
     for(unsigned int i = 0; i < cfd_factor.n_elem; i++){
         row_reg += lambda1 * pow(norm(cfd_factor(i), "F"), 2);
     }
-    double col_reg = lambda1 * pow(norm(column_factor, "F"), 2);
     
+    double col_reg = lambda1 * pow(norm(column_factor, "F"), 2);
     double cell_l1_reg = lambda2 * alpha * sum(sum(abs(cell_factor), 1));   //  l1 penalty
     double cell_l2_reg = lambda2 * (1 - alpha) * pow(norm(cell_factor, "F"), 2); //  l2 penalty
 
     double loss = sum_residual/2 + row_reg/2 + col_reg/2 + cell_l1_reg + cell_l2_reg/2; 
 
     if(verbose == 1) {
-        cout << "total_residual" << '\t' << sum_residual/2 << ";" << '\n'
-             << "row_reg_loss:" << '\t' << row_reg/2 << ";" << '\n'
-             << "col_reg_loss:" << '\t' << col_reg/2 << ";" << '\n'
-             << "cell_l2_reg:" << '\t' << cell_l2_reg/2 << ";" << '\n'
-             << "l1_reg_loss:" << '\t' << cell_l1_reg << "." << endl;
+        cout << "squared diff:" << '\t' << sum_residual/2 
+             << " | row reg :" << '\t' << row_reg/2 
+             << " | col reg :" << '\t' << col_reg/2 
+             << " | S L2 reg:" << '\t' << cell_l2_reg/2 
+             << " | S L1 reg:" << '\t' << cell_l1_reg << endl;
     }
     return loss;
 }
