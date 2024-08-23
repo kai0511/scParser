@@ -275,7 +275,7 @@ List partial_optimize(const mat& data, const umat& train_indicator, List& cfd_fa
 
     // check the fitting with initial values
     residual = data - row_factor * column_factor;
-    evaluate(residual, train_idx, test_idx, sum_residual, train_rmse, test_rmse, tuning, iter, 1);
+    evaluate(residual, train_idx, test_idx, sum_residual, train_rmse, test_rmse, tuning);
 
     // compute loss
     loss = sum_residual/2;
@@ -304,7 +304,7 @@ List partial_optimize(const mat& data, const umat& train_indicator, List& cfd_fa
             if(i != cfd_num - 1){
                 residual -= index_matrices(i) * cfd_matrices(i) * column_factor;
             }
-	        evaluate(residual, train_idx, test_idx, sum_residual, train_rmse, test_rmse, tuning, iter, 1);
+            evaluate(residual, train_idx, test_idx, sum_residual, train_rmse, test_rmse, tuning);
         }
 
         // update columm_factor
@@ -319,7 +319,7 @@ List partial_optimize(const mat& data, const umat& train_indicator, List& cfd_fa
         // check fitting every 10 steps
         if(iter % 10 == 0){
             
-            evaluate(residual, train_idx, test_idx, sum_residual, train_rmse, test_rmse, tuning, iter, 1);
+            evaluate(residual, train_idx, test_idx, sum_residual, train_rmse, test_rmse, tuning);
 
             // compute loss
             pre_loss = loss;
@@ -406,7 +406,7 @@ List optimize(const mat& data, const umat& train_indicator, List& cfd_factors, m
     // check the fitting with initial values
     predict(row_factor, column_factor, cell_factor, gene_factor, predictions);
     residual = data - predictions;
-    evaluate(residual, train_idx, test_idx, sum_residual, train_rmse, test_rmse, tuning, iter, 1);
+    evaluate(residual, train_idx, test_idx, sum_residual, train_rmse, test_rmse, tuning);
     loss = compute_loss(cfd_matrices, column_factor, cell_factor, gene_factor, lambda1, lambda2, alpha, sum_residual, 0);
 
     while(iter <= max_iter) {
@@ -454,7 +454,7 @@ List optimize(const mat& data, const umat& train_indicator, List& cfd_factors, m
         // check fitting every 10 steps
         if(iter % 10 == 0){
             pre_loss = loss;
-            evaluate(residual, train_idx, test_idx, sum_residual, train_rmse, test_rmse, tuning, iter, 1);
+            evaluate(residual, train_idx, test_idx, sum_residual, train_rmse, test_rmse, tuning);
             loss = compute_loss(cfd_matrices, column_factor, cell_factor, gene_factor, lambda1, lambda2, alpha, sum_residual, 0);
 
             delta_loss = pre_loss - loss;
@@ -915,7 +915,7 @@ List sample_optimize(const mat& data, const List& cfd_factors, mat column_factor
             loss += lambda2 * alpha * sum(sum(abs(cell_factor), 1))/num_batch;
 
             delta_loss = std::abs(pre_loss - loss);
-            cout << "[Step 2] Iter " << iter << " | loss: " << loss << " | delta loss: " << delta_loss << << " | train rmse: " << train_rmse << endl;
+            cout << "[Step 2] Iter " << iter << " | loss: " << loss << " | delta loss: " << delta_loss << " | train rmse: " << train_rmse << endl;
 
             if(delta_loss/pre_loss < global_tol){
                 break;
